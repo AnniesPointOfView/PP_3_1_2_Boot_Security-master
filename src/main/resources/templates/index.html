@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Spring Security Example</title>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../../../css/style.css" th:href="@{/css/style.css}" />
+</head>
+<body>
+<h1>Welcome to CRUD App!</h1>
+<form class="container-logout" th:method="GET" th:action="@{/login}">
+    <input type="submit" value="Login"/>
+</form>
+</body>
+</html>

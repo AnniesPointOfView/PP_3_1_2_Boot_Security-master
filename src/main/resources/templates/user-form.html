@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New user</title>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../../../css/form.css" th:href="@{/css/form.css}" />
+</head>
+<body>
+<form th:method="POST" th:action="@{/admin}" th:object="${user}">
+    <input type="hidden" th:field="*{id}" th:value="*{getId()}">
+    <div class="group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" th:field="*{firstName}" th:value="*{getFirstName()}" placeholder="Enter first name" required>
+        <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"/>
+    </div>
+    <div class="group">
+        <label for="lastName">Last name</label>
+        <input type="text" class="form-control" id="lastName" th:field="*{lastName}" th:value="*{getLastName()}" placeholder="Enter last name">
+    </div>
+    <div class="group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" th:field="*{username}" th:value="*{getUsername()}" placeholder="Enter username">
+    </div>
+    <div class="group">
+        <label for="password">Password</label>
+        <input type="text" class="form-control" id="password" th:field="*{password}" th:value="*{getPassword()}" placeholder="Enter password" required>
+        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"/>
+    </div>
+    <div class="group">
+        <label for="email">Email</label>
+        <input type="text" class="form-control" id="email" th:field="*{email}" th:value="*{getEmail()}" placeholder="Enter email" required>
+        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"/>
+    </div>
+    <div class="group">
+        <label for="roles">Roles</label>
+        <div class="boxes" id="roles" th:each="role : ${allRoles}">
+            <input type="checkbox" name="roles" th:checked="${user.hasRole('__${role.name}__')}" th:id="${role.name}" th:value="${role.id}">
+            <label th:for="${role.name}" th:text="${role.name}"/>
+        </div>
+    </div>
+    <div class="wrapper">
+        <button class="usr-btn" type="submit" th:text="*{getId()} ? 'Save' : 'Create'"/>
+        <a class="usr-btn" href="/admin">Cancel</a>
+    </div>
+</form>
+</body>
+</html>

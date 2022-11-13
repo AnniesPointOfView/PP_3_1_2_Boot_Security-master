@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of users</title>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../../../css/style.css" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div>
+    <h1>CRUD App (MVC, Spring Boot, Spring Security)</h1>
+    <a class="usr-btn" th:href="@{/admin/new}">Create user</a>
+    <table th:class="table">
+        <thead>
+        <tr>
+            <th>№</th>
+            <th>Username</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>E-mail</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user, pos : ${users}"
+            th:style="${pos.odd}? 'font-weight: bold;'">
+                <td th:text="${pos.index} + 1"></td>
+                <td th:text="${user.getUsername()}"></td>
+                <td th:text="${user.getFirstName()}"></td>
+                <td th:text="${user.getLastName()}"></td>
+                <td th:text="${user.getEmail()}"></td>
+                <td><a type="button" th:href="@{admin/{id}/edit(id=${user.getId()})}">Edit</a></td>
+                <td><a type="button" th:href="@{/admin/{id}/delete(id=${user.getId()})}">Delete</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<form class="container-logout" th:method="POST" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
+</body>
+</html>
