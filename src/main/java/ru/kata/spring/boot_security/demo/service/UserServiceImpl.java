@@ -9,36 +9,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repository.RoleRepository;
+
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import javax.persistence.PersistenceException;
 import java.util.List;
 
 @Service
-@Transactional
-public class AppServiceImpl implements AppService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public AppServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
-        }
-        return user;
     }
 
     @Override
@@ -57,19 +45,22 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    public User findUser(int userId) {
-        return userRepository.findById(userId).orElse(null);
+    public User findUser(int id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional
     public boolean saveUser(User user, BindingResult bindingResult, Model model) {
-        model.addAttribute("allRoles", findAllRoles());
+        model.addAttribute("allRoles", roleService.findAllRoles());
 
         if (bindingResult.hasErrors()) {
             return false;
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user == null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
 
         try {
             userRepository.save(user);
@@ -81,26 +72,31 @@ public class AppServiceImpl implements AppService {
         return true;
     }
 
+    @Transactional
     @Override
-    public void updateUser(int id, User updatedUser) {
-        User user = findById(id);
-        user.setUsername(updatedUser.getUsername());
-        user.setPassword(updatedUser.getPassword());
-
-        user.getRoles().clear();
-        updatedUser.getRoles().forEach(role ->
-                user.getRoles().add(roleRepository.findByName(role.getName())));
-        userRepository.save(user);
+    public boolean saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        try {
+            userRepository.save(user);
+        } catch (PersistenceException e) {
+            return false;
+        }
+        return true;
     }
 
+    @Transactional
     @Override
     public void deleteUser(int id) {
         userRepository.delete(findById(id));
     }
 
+    @Transactional
     @Override
-    public List<Role> findAllRoles() {
-        return roleRepository.findAll();
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
+        }
+        return user;
     }
-
 }
