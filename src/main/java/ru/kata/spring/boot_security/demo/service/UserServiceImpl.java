@@ -90,7 +90,6 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(findById(id));
     }
 
-    @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = findByUsername(username);
